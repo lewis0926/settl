@@ -16,7 +16,7 @@ export default function App() {
   const { theme, toggle } = useTheme()
 
   function patch(partial: Partial<AppState>) {
-    setState({ ...state, ...partial })
+    setState(prev => ({ ...prev, ...partial }))
   }
 
   return (

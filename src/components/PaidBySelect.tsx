@@ -6,9 +6,10 @@ interface Props {
   value: string
   onChange: (person: string) => void
   onAddPerson: (name: string) => void
+  onRemovePerson: (name: string) => void
 }
 
-export default function PaidBySelect({ people, value, onChange, onAddPerson }: Props) {
+export default function PaidBySelect({ people, value, onChange, onAddPerson, onRemovePerson }: Props) {
   const [open, setOpen] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -56,7 +57,7 @@ export default function PaidBySelect({ people, value, onChange, onAddPerson }: P
             {people.length > 0 && (
               <ul className="paid-select-options">
                 {people.map(p => (
-                  <li key={p}>
+                  <li key={p} className="paid-select-item">
                     <button
                       type="button"
                       className={`paid-select-option${p === value ? ' selected' : ''}`}
@@ -64,6 +65,14 @@ export default function PaidBySelect({ people, value, onChange, onAddPerson }: P
                     >
                       {p}
                       {p === value && <span className="check">✓</span>}
+                    </button>
+                    <button
+                      type="button"
+                      className="paid-select-remove"
+                      onClick={e => { e.stopPropagation(); onRemovePerson(p) }}
+                      aria-label={`Remove ${p}`}
+                    >
+                      ×
                     </button>
                   </li>
                 ))}

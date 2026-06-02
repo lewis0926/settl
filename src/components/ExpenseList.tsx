@@ -20,6 +20,12 @@ export default function ExpenseList({ people, expenses, onPeople, onExpenses, on
     if (!people.includes(name)) onPeople([...people, name])
   }
 
+  function removePerson(name: string) {
+    onPeople(people.filter(p => p !== name))
+    onExpenses(expenses.filter(e => e.paidBy !== name))
+    if (paidBy === name) setPaidBy('')
+  }
+
   function handlePaidByChange(person: string) {
     setPaidBy(person)
   }
@@ -90,6 +96,7 @@ export default function ExpenseList({ people, expenses, onPeople, onExpenses, on
               value={paidBy}
               onChange={handlePaidByChange}
               onAddPerson={addPerson}
+              onRemovePerson={removePerson}
             />
           </div>
         </div>

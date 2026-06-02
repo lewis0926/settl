@@ -433,6 +433,15 @@ input[type="number"] { -moz-appearance: textfield; }
   overflow-y: auto;
 }
 
+.paid-select-item {
+  display: flex;
+  align-items: center;
+}
+
+.paid-select-item .paid-select-option {
+  flex: 1;
+}
+
 .paid-select-option {
   width: 100%;
   display: flex;
@@ -456,6 +465,20 @@ input[type="number"] { -moz-appearance: textfield; }
   font-size: 12px;
   color: var(--green);
 }
+
+.paid-select-remove {
+  flex-shrink: 0;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.1s;
+}
+
+.paid-select-remove:hover { color: var(--red); }
 
 .paid-select-add {
   width: 100%;
