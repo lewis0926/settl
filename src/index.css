@@ -77,6 +77,8 @@ html, body {
   line-height: 1;
 }
 
+[data-theme="light"] .logo { color: var(--text-muted); }
+
 .theme-toggle {
   display: flex;
   align-items: center;

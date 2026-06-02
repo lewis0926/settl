@@ -3,7 +3,7 @@ import { AppProvider, useAppContext } from './context/AppContext.tsx'
 import PeopleSetup from './components/PeopleSetup.tsx'
 import ExpenseList from './components/ExpenseList.tsx'
 import Settlement from './components/Settlement.tsx'
-import logoUrl from './assets/logo.svg'
+import Logo from './components/Logo.tsx'
 
 function AppShell() {
   const { state, patch } = useAppContext()
@@ -13,8 +13,8 @@ function AppShell() {
     <div className="app">
       <header className="app-header">
         <div className="header-left">
-          <a className="logo" href="#" onClick={() => patch({ step: 'expenses' })} aria-label="$ettl">
-            <img src={logoUrl} alt="$ettl" height="22" />
+          <a className="logo" href="#" onClick={() => patch({ step: 'expenses' })}>
+            <Logo />
           </a>
           <span className="logo-tag">bill splitter</span>
         </div>

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+
+  <!-- Grid -->
+  <defs>
+    <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+      <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#161616" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Green glow -->
+  <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#10b981" stop-opacity="0.08"/>
+    <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+  </radialGradient>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Logo: $ettl -->
+  <text x="600" y="240" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-weight="700" font-size="120" text-anchor="middle" letter-spacing="-4">
+    <tspan fill="#10b981">$</tspan><tspan fill="#e5e5e5">ettl</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text x="600" y="320" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="28" fill="#888888" text-anchor="middle" letter-spacing="0.5">
+    Split bills. No signup. No backend.
+  </text>
+
+  <!-- Pills -->
+  <rect x="280" y="390" width="160" height="44" rx="22" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="360" y="418" font-family="-apple-system, sans-serif" font-size="16" fill="#888" text-anchor="middle">Weighted splits</text>
+
+  <rect x="460" y="390" width="170" height="44" rx="22" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="545" y="418" font-family="-apple-system, sans-serif" font-size="16" fill="#888" text-anchor="middle">Multi-currency</text>
+
+  <rect x="650" y="390" width="170" height="44" rx="22" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="735" y="418" font-family="-apple-system, sans-serif" font-size="16" fill="#888" text-anchor="middle">Offline-ready</text>
+
+  <!-- URL -->
+  <text x="600" y="520" font-family="-apple-system, sans-serif" font-size="20" fill="#555555" text-anchor="middle">
+    settl.lewisshum.com
+  </text>
+
+  <!-- Bottom accent line -->
+  <rect x="540" y="548" width="120" height="2" rx="1" fill="#10b981" opacity="0.5"/>
+</svg>
