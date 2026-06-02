@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { uid, fmt } from '../utils.ts'
 import { useAppContext } from '../context/AppContext.tsx'
-import PaidBySelect from './PaidBySelect.tsx'
+import PersonSelect from './PersonSelect.tsx'
 
 export default function ExpenseList() {
   const { state, patch } = useAppContext()
@@ -9,19 +9,7 @@ export default function ExpenseList() {
 
   const [desc, setDesc] = useState('')
   const [amount, setAmount] = useState('')
-  const [paidBy, setPaidBy] = useState('')
-
-  function addPerson(name: string) {
-    if (!people.includes(name)) patch({ people: [...people, name] })
-  }
-
-  function removePerson(name: string) {
-    patch({
-      people: people.filter(p => p !== name),
-      expenses: expenses.filter(e => e.paidBy !== name),
-    })
-    if (paidBy === name) setPaidBy('')
-  }
+  const [paidBy, setPaidBy] = useState(people[0] ?? '')
 
   function addExpense() {
     const parsed = parseFloat(amount)
@@ -43,10 +31,10 @@ export default function ExpenseList() {
   return (
     <div className="step-card">
       <div className="step-header">
-        <span className="step-badge">1</span>
+        <span className="step-badge">2</span>
         <div>
           <h2>Add expenses</h2>
-          <p className="step-sub">Who paid what? Splits are equal among everyone.</p>
+          <p className="step-sub">Who paid what? Splits follow the ratios you set.</p>
         </div>
       </div>
 
@@ -85,12 +73,7 @@ export default function ExpenseList() {
 
           <div className="field">
             <label>Paid by</label>
-            <PaidBySelect
-              value={paidBy}
-              onChange={setPaidBy}
-              onAddPerson={addPerson}
-              onRemovePerson={removePerson}
-            />
+            <PersonSelect people={people} value={paidBy} onChange={setPaidBy} />
           </div>
         </div>
 
@@ -130,11 +113,7 @@ export default function ExpenseList() {
       )}
 
       <div className="nav-row">
-        <span className="settle-hint">
-          {!canSettle
-            ? 'Add at least 2 people to settle'
-            : ''}
-        </span>
+        <button className="btn-ghost" onClick={() => patch({ step: 'setup' })}>← People</button>
         <button className="btn-primary" onClick={() => patch({ step: 'settlement' })} disabled={!canSettle}>
           Settle up →
         </button>

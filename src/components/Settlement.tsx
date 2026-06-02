@@ -3,9 +3,9 @@ import { calcSettlement, fmt } from '../utils.ts'
 
 export default function Settlement() {
   const { state, patch, reset } = useAppContext()
-  const { people, expenses } = state
+  const { people, weights, expenses } = state
 
-  const transfers = calcSettlement(people, expenses)
+  const transfers = calcSettlement(people, expenses, weights)
   const total = expenses.reduce((s, e) => s + e.amount, 0)
   const perPerson = total / people.length
 

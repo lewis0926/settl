@@ -5,11 +5,12 @@ export interface Expense {
   paidBy: string
 }
 
-export type Step = 'expenses' | 'settlement'
+export type Step = 'setup' | 'expenses' | 'settlement'
 
 export interface AppState {
   step: Step
   people: string[]
+  weights: Record<string, number>
   expenses: Expense[]
 }
 

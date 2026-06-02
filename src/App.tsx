@@ -1,5 +1,6 @@
 import { useTheme } from './hooks/useTheme.ts'
 import { AppProvider, useAppContext } from './context/AppContext.tsx'
+import PeopleSetup from './components/PeopleSetup.tsx'
 import ExpenseList from './components/ExpenseList.tsx'
 import Settlement from './components/Settlement.tsx'
 import logoUrl from './assets/logo.svg'
@@ -45,6 +46,7 @@ function AppShell() {
       </header>
 
       <main className="app-main">
+        {state.step === 'setup' && <PeopleSetup />}
         {state.step === 'expenses' && <ExpenseList />}
         {state.step === 'settlement' && <Settlement />}
       </main>

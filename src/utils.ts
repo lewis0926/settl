@@ -1,16 +1,22 @@
 import type { Expense, Transfer } from './types.ts'
 
-export function calcSettlement(people: string[], expenses: Expense[]): Transfer[] {
+export function calcSettlement(
+  people: string[],
+  expenses: Expense[],
+  weights: Record<string, number> = {},
+): Transfer[] {
   if (people.length < 2 || expenses.length === 0) return []
+
+  const w = (p: string) => weights[p] ?? 1
+  const totalWeight = people.reduce((s, p) => s + w(p), 0)
 
   const balance: Record<string, number> = {}
   for (const p of people) balance[p] = 0
 
   for (const exp of expenses) {
-    const share = exp.amount / people.length
     balance[exp.paidBy] = (balance[exp.paidBy] ?? 0) + exp.amount
     for (const p of people) {
-      balance[p] = (balance[p] ?? 0) - share
+      balance[p] = (balance[p] ?? 0) - exp.amount * w(p) / totalWeight
     }
   }
 
@@ -24,7 +30,6 @@ export function calcSettlement(people: string[], expenses: Expense[]): Transfer[
   }
 
   const transfers: Transfer[] = []
-
   creditors.sort((a, b) => b.amount - a.amount)
   debtors.sort((a, b) => b.amount - a.amount)
 
@@ -43,6 +48,12 @@ export function calcSettlement(people: string[], expenses: Expense[]): Transfer[
   }
 
   return transfers
+}
+
+export function sharePercent(person: string, people: string[], weights: Record<string, number>): number {
+  const w = (p: string) => weights[p] ?? 1
+  const totalWeight = people.reduce((s, p) => s + w(p), 0)
+  return totalWeight === 0 ? 0 : (w(person) / totalWeight) * 100
 }
 
 export function uid(): string {

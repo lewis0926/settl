@@ -11,8 +11,9 @@ interface AppContextValue {
 const AppContext = createContext<AppContextValue | null>(null)
 
 const DEFAULT_STATE: AppState = {
-  step: 'expenses',
+  step: 'setup',
   people: [],
+  weights: {},
   expenses: [],
 }
 

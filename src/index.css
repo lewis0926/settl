@@ -458,7 +458,8 @@ input[type="number"] { -moz-appearance: textfield; }
   transition: background 0.1s;
 }
 
-.paid-select-option:hover { background: var(--hover); }
+.paid-select-option:hover,
+.paid-select-option.focused { background: var(--hover); }
 .paid-select-option.selected { color: var(--green); }
 
 .paid-select-option .check {
@@ -577,6 +578,126 @@ input[type="number"] { -moz-appearance: textfield; }
   border: 1px solid var(--border);
   border-radius: 10px;
 }
+
+/* ── People & ratios ────────────────────────────── */
+
+.people-ratios {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.people-ratios-header {
+  display: grid;
+  grid-template-columns: 3fr 1fr 0.3fr 0.2fr;
+  align-items: center;
+  padding: 8px 14px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+
+.ratios-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.ratios-badge {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--green);
+  background: var(--green-glow);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 10px;
+  padding: 2px 8px;
+}
+
+.ratios-list {
+  list-style: none;
+}
+
+.ratio-item {
+  display: grid;
+  grid-template-columns: 3fr 1fr 0.3fr 0.2fr;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ratio-item:last-child { border-bottom: none; }
+
+.ratio-name {
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ratio-input-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+.ratio-input {
+  width: 40px;
+  background: none !important;
+  border: none !important;
+  border-radius: 0;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  padding: 0;
+  outline: none;
+}
+
+.ratio-x {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.ratio-pct {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 34px;
+}
+
+.ratio-remove {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  transition: color 0.1s;
+}
+
+.ratio-remove:hover { color: var(--red); }
 
 /* ── Expense list ───────────────────────────────── */
 
