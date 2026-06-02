@@ -56,6 +56,37 @@ export function sharePercent(person: string, people: string[], weights: Record<s
   return totalWeight === 0 ? 0 : (w(person) / totalWeight) * 100
 }
 
+export const CURRENCIES = ['CAD', 'HKD', 'JPY', 'USD'] as const
+export const DEFAULT_CURRENCY = 'CAD'
+const RATES_TTL = 12 * 60 * 60 * 1000 // 12 hours
+
+export function ratesStale(updatedAt: number): boolean {
+  return Date.now() - updatedAt > RATES_TTL
+}
+
+export async function fetchRates(): Promise<{ rates: Record<string, number>; updatedAt: number }> {
+  const res = await fetch(
+    'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json'
+  )
+  if (!res.ok) throw new Error('Failed to fetch exchange rates')
+  const json = await res.json() as { usd: Record<string, number> }
+  const keys = CURRENCIES.filter(c => c !== 'USD').map(c => c.toLowerCase())
+  const rates: Record<string, number> = { USD: 1 }
+  for (const c of keys) {
+    rates[c.toUpperCase()] = json.usd[c]
+  }
+  return { rates, updatedAt: Date.now() }
+}
+
+export function convert(amount: number, from: string, to: string, rates: Record<string, number> = {}): number {
+  if (from === to || !rates[from] || !rates[to]) return amount
+  return (amount / rates[from]) * rates[to]
+}
+
+export function fmtCurrency(amount: number, currency: string): string {
+  return `${fmt(Math.round(amount * 100) / 100)} ${currency}`
+}
+
 export function uid(): string {
   return Math.random().toString(36).slice(2, 10)
 }

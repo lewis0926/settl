@@ -15,10 +15,15 @@ const DEFAULT_STATE: AppState = {
   people: [],
   weights: {},
   expenses: [],
+  multiCurrency: false,
+  rates: { CAD: 1, HKD: 1, JPY: 1, USD: 1 },
+  ratesUpdated: 0,
+  settleCurrency: 'CAD',
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useLocalStorage<AppState>('settl-state', DEFAULT_STATE)
+  const [rawState, setState] = useLocalStorage<AppState>('settl-state', DEFAULT_STATE)
+  const state: AppState = { ...DEFAULT_STATE, ...rawState }
 
   function patch(partial: Partial<AppState>) {
     setState(prev => ({ ...prev, ...partial }))

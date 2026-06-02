@@ -1,25 +1,26 @@
 import { useState, useRef, useEffect } from 'react'
 
 interface Props {
-  people: string[]
+  options: string[]
   value: string
-  onChange: (person: string) => void
+  onChange: (value: string) => void
+  placeholder?: string
 }
 
-export default function PersonSelect({ people, value, onChange }: Props) {
+export default function Dropdown({ options, value, onChange, placeholder = 'Select…' }: Props) {
   const [open, setOpen] = useState(false)
   const [focusedIndex, setFocusedIndex] = useState(-1)
   const ref = useRef<HTMLDivElement>(null)
   const optionRefs = useRef<(HTMLButtonElement | null)[]>([])
 
   function openDropdown() {
-    const current = people.indexOf(value)
+    const current = options.indexOf(value)
     setFocusedIndex(current >= 0 ? current : 0)
     setOpen(true)
   }
 
-  function select(person: string) {
-    onChange(person)
+  function select(option: string) {
+    onChange(option)
     setOpen(false)
   }
 
@@ -37,18 +38,18 @@ export default function PersonSelect({ people, value, onChange }: Props) {
       if (e.key === 'Escape') { setOpen(false); return }
       if (e.key === 'ArrowDown') {
         e.preventDefault()
-        setFocusedIndex(i => (i + 1) % people.length)
+        setFocusedIndex(i => (i + 1) % options.length)
       } else if (e.key === 'ArrowUp') {
         e.preventDefault()
-        setFocusedIndex(i => (i - 1 + people.length) % people.length)
+        setFocusedIndex(i => (i - 1 + options.length) % options.length)
       } else if (e.key === 'Enter' && focusedIndex >= 0) {
         e.preventDefault()
-        select(people[focusedIndex])
+        select(options[focusedIndex])
       }
     }
     document.addEventListener('keydown', handleKey)
     return () => document.removeEventListener('keydown', handleKey)
-  }, [open, focusedIndex, people])
+  }, [open, focusedIndex, options])
 
   useEffect(() => {
     if (open && focusedIndex >= 0) {
@@ -63,7 +64,7 @@ export default function PersonSelect({ people, value, onChange }: Props) {
         className={`paid-select-trigger${open ? ' open' : ''}`}
         onClick={() => open ? setOpen(false) : openDropdown()}
       >
-        <span className={value ? '' : 'placeholder'}>{value || 'Select person'}</span>
+        <span className={value ? '' : 'placeholder'}>{value || placeholder}</span>
         <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
           <path d="M1 1l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
@@ -72,17 +73,17 @@ export default function PersonSelect({ people, value, onChange }: Props) {
       {open && (
         <div className="paid-select-menu">
           <ul className="paid-select-options">
-            {people.map((p, i) => (
-              <li key={p}>
+            {options.map((opt, i) => (
+              <li key={opt}>
                 <button
                   ref={el => { optionRefs.current[i] = el }}
                   type="button"
-                  className={`paid-select-option${p === value ? ' selected' : ''}${i === focusedIndex ? ' focused' : ''}`}
-                  onClick={() => select(p)}
+                  className={`paid-select-option${opt === value ? ' selected' : ''}${i === focusedIndex ? ' focused' : ''}`}
+                  onClick={() => select(opt)}
                   onMouseEnter={() => setFocusedIndex(i)}
                 >
-                  {p}
-                  {p === value && <span className="check">✓</span>}
+                  {opt}
+                  {opt === value && <span className="check">✓</span>}
                 </button>
               </li>
             ))}

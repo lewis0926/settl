@@ -370,6 +370,124 @@ input[type="number"] { -moz-appearance: textfield; }
 
 .chip-remove:hover { color: var(--red); }
 
+/* ── Multi-currency toggle ──────────────────────── */
+
+.multicur-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.multicur-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.multicur-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.multicur-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.multicur-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.multicur-btn.on {
+  background: var(--green-glow);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.multicur-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.multicur-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.multicur-btn.on .multicur-dot { background: var(--green); }
+
+.rates-error {
+  font-size: 13px;
+  color: var(--red);
+  padding: 8px 12px;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 8px;
+}
+
+/* ── Currency pill selector (settlement) ────────── */
+
+.settle-currency-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.settle-currency-pills {
+  display: flex;
+  gap: 6px;
+}
+
+.currency-pill {
+  padding: 5px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.currency-pill:hover { border-color: var(--text-muted); color: var(--text); }
+
+.currency-pill.active {
+  background: var(--green-glow);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+/* ── Three-column field row ─────────────────────── */
+
+.field-row.three-col {
+  grid-template-columns: 1fr 80px 1fr;
+}
+
 /* ── Custom PaidBy select ───────────────────────── */
 
 .paid-select {
