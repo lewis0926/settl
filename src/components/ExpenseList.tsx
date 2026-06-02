@@ -1,50 +1,44 @@
 import { useState } from 'react'
-import type { Expense } from '../types.ts'
 import { uid, fmt } from '../utils.ts'
+import { useAppContext } from '../context/AppContext.tsx'
 import PaidBySelect from './PaidBySelect.tsx'
 
-interface Props {
-  people: string[]
-  expenses: Expense[]
-  onPeople: (people: string[]) => void
-  onExpenses: (expenses: Expense[]) => void
-  onNext: () => void
-}
+export default function ExpenseList() {
+  const { state, patch } = useAppContext()
+  const { people, expenses } = state
 
-export default function ExpenseList({ people, expenses, onPeople, onExpenses, onNext }: Props) {
   const [desc, setDesc] = useState('')
   const [amount, setAmount] = useState('')
   const [paidBy, setPaidBy] = useState('')
 
   function addPerson(name: string) {
-    if (!people.includes(name)) onPeople([...people, name])
+    if (!people.includes(name)) patch({ people: [...people, name] })
   }
 
   function removePerson(name: string) {
-    onPeople(people.filter(p => p !== name))
-    onExpenses(expenses.filter(e => e.paidBy !== name))
+    patch({
+      people: people.filter(p => p !== name),
+      expenses: expenses.filter(e => e.paidBy !== name),
+    })
     if (paidBy === name) setPaidBy('')
-  }
-
-  function handlePaidByChange(person: string) {
-    setPaidBy(person)
   }
 
   function addExpense() {
     const parsed = parseFloat(amount)
     if (!desc.trim() || isNaN(parsed) || parsed <= 0 || !paidBy) return
-    onExpenses([...expenses, { id: uid(), description: desc.trim(), amount: parsed, paidBy }])
+    patch({ expenses: [...expenses, { id: uid(), description: desc.trim(), amount: parsed, paidBy }] })
     setDesc('')
     setAmount('')
   }
 
   function removeExpense(id: string) {
-    onExpenses(expenses.filter(e => e.id !== id))
+    patch({ expenses: expenses.filter(e => e.id !== id) })
   }
 
   const total = expenses.reduce((s, e) => s + e.amount, 0)
   const canAdd = desc.trim() && parseFloat(amount) > 0 && !!paidBy
-  const canSettle = expenses.length > 0 && people.length >= 2
+  const uniquePayers = new Set(expenses.map(e => e.paidBy)).size
+  const canSettle = expenses.length > 0 && people.length >= 2 && uniquePayers >= 2
 
   return (
     <div className="step-card">
@@ -92,9 +86,8 @@ export default function ExpenseList({ people, expenses, onPeople, onExpenses, on
           <div className="field">
             <label>Paid by</label>
             <PaidBySelect
-              people={people}
               value={paidBy}
-              onChange={handlePaidByChange}
+              onChange={setPaidBy}
               onAddPerson={addPerson}
               onRemovePerson={removePerson}
             />
@@ -138,11 +131,11 @@ export default function ExpenseList({ people, expenses, onPeople, onExpenses, on
 
       <div className="nav-row">
         <span className="settle-hint">
-          {!canSettle && people.length < 2 && expenses.length > 0
+          {!canSettle
             ? 'Add at least 2 people to settle'
             : ''}
         </span>
-        <button className="btn-primary" onClick={onNext} disabled={!canSettle}>
+        <button className="btn-primary" onClick={() => patch({ step: 'settlement' })} disabled={!canSettle}>
           Settle up →
         </button>
       </div>

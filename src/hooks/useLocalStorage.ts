@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 
-export function useLocalStorage<T>(key: string, initial: T): [T, (val: T) => void] {
+type Updater<T> = T | ((prev: T) => T)
+
+export function useLocalStorage<T>(key: string, initial: T): [T, (val: Updater<T>) => void] {
   const [value, setValue] = useState<T>(() => {
     try {
       const stored = localStorage.getItem(key)
@@ -18,5 +20,9 @@ export function useLocalStorage<T>(key: string, initial: T): [T, (val: T) => voi
     }
   }, [key, value])
 
-  return [value, setValue]
+  function set(val: Updater<T>) {
+    setValue(prev => (typeof val === 'function' ? (val as (p: T) => T)(prev) : val))
+  }
+
+  return [value, set]
 }

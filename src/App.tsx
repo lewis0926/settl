@@ -1,23 +1,12 @@
-import type { AppState } from './types.ts'
-import { useLocalStorage } from './hooks/useLocalStorage.ts'
 import { useTheme } from './hooks/useTheme.ts'
+import { AppProvider, useAppContext } from './context/AppContext.tsx'
 import ExpenseList from './components/ExpenseList.tsx'
 import Settlement from './components/Settlement.tsx'
 import logoUrl from './assets/logo.svg'
 
-const DEFAULT_STATE: AppState = {
-  step: 'expenses',
-  people: [],
-  expenses: [],
-}
-
-export default function App() {
-  const [state, setState] = useLocalStorage<AppState>('settl-state', DEFAULT_STATE)
+function AppShell() {
+  const { state, patch } = useAppContext()
   const { theme, toggle } = useTheme()
-
-  function patch(partial: Partial<AppState>) {
-    setState(prev => ({ ...prev, ...partial }))
-  }
 
   return (
     <div className="app">
@@ -56,28 +45,21 @@ export default function App() {
       </header>
 
       <main className="app-main">
-        {state.step === 'expenses' && (
-          <ExpenseList
-            people={state.people}
-            expenses={state.expenses}
-            onPeople={people => patch({ people })}
-            onExpenses={expenses => patch({ expenses })}
-            onNext={() => patch({ step: 'settlement' })}
-          />
-        )}
-        {state.step === 'settlement' && (
-          <Settlement
-            people={state.people}
-            expenses={state.expenses}
-            onBack={() => patch({ step: 'expenses' })}
-            onReset={() => setState(DEFAULT_STATE)}
-          />
-        )}
+        {state.step === 'expenses' && <ExpenseList />}
+        {state.step === 'settlement' && <Settlement />}
       </main>
 
       <footer className="app-footer">
         No signup · No backend · Data stays in your browser
       </footer>
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <AppProvider>
+      <AppShell />
+    </AppProvider>
   )
 }

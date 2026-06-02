@@ -1,15 +1,18 @@
 import { useState, useRef, useEffect } from 'react'
+import { useAppContext } from '../context/AppContext.tsx'
 import AddPersonModal from './AddPersonModal.tsx'
 
 interface Props {
-  people: string[]
   value: string
   onChange: (person: string) => void
   onAddPerson: (name: string) => void
   onRemovePerson: (name: string) => void
 }
 
-export default function PaidBySelect({ people, value, onChange, onAddPerson, onRemovePerson }: Props) {
+export default function PaidBySelect({ value, onChange, onAddPerson, onRemovePerson }: Props) {
+  const { state } = useAppContext()
+  const { people } = state
+
   const [open, setOpen] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
