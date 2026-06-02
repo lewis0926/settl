@@ -122,6 +122,14 @@ html, body {
   text-align: center;
 }
 
+.footer-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer-link:hover { color: var(--text); }
+
 /* ── Step card ──────────────────────────────────── */
 
 .step-card {
@@ -707,7 +715,7 @@ input[type="number"] { -moz-appearance: textfield; }
 
 .people-ratios-header {
   display: grid;
-  grid-template-columns: 3fr 1fr 0.3fr 0.2fr;
+  grid-template-columns: 3fr 1.2fr 0.3fr 0.2fr;
   align-items: center;
   padding: 8px 14px;
   background: var(--surface);
@@ -749,7 +757,7 @@ input[type="number"] { -moz-appearance: textfield; }
 
 .ratio-item {
   display: grid;
-  grid-template-columns: 3fr 1fr 0.3fr 0.2fr;
+  grid-template-columns: 3fr 1.2fr 0.3fr 0.2fr;
   gap: 12px;
   align-items: center;
   padding: 10px 14px;

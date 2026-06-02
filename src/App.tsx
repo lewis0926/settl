@@ -52,7 +52,10 @@ function AppShell() {
       </main>
 
       <footer className="app-footer">
-        No signup · No backend · Data stays in your browser
+        No signup · Data stays in your browser · Built by{' '}
+        <a href="https://lewisshum.com" target="_blank" rel="noopener noreferrer" className="footer-link">
+          Lewis Shum
+        </a>
       </footer>
     </div>
   )
