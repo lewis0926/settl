@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { IconChevron, IconCheck } from './Icons.tsx'
 
 interface Props {
   options: string[]
@@ -65,9 +66,7 @@ export default function Dropdown({ options, value, onChange, placeholder = 'Sele
         onClick={() => open ? setOpen(false) : openDropdown()}
       >
         <span className={value ? '' : 'placeholder'}>{value || placeholder}</span>
-        <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
-          <path d="M1 1l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        <IconChevron />
       </button>
 
       {open && (
@@ -83,7 +82,7 @@ export default function Dropdown({ options, value, onChange, placeholder = 'Sele
                   onMouseEnter={() => setFocusedIndex(i)}
                 >
                   {opt}
-                  {opt === value && <span className="check">✓</span>}
+                  {opt === value && <IconCheck className="check" />}
                 </button>
               </li>
             ))}

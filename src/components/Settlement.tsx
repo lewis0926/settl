@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAppContext } from '../context/AppContext.tsx'
 import { calcSettlement, convert, fmt, fmtCurrency, CURRENCIES, DEFAULT_CURRENCY } from '../utils.ts'
 import type { Expense } from '../types.ts'
+import { IconChevron } from './Icons.tsx'
 
 export default function Settlement() {
   const { state, patch, reset } = useAppContext()
@@ -95,12 +96,7 @@ export default function Settlement() {
                 <span className="breakdown-desc">
                   {e.description}
                   {isPartial && (
-                    <svg
-                      className={`breakdown-chevron${isExpanded ? ' open' : ''}`}
-                      width="12" height="12" viewBox="0 0 12 12" fill="none"
-                    >
-                      <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    <IconChevron className={`breakdown-chevron${isExpanded ? ' open' : ''}`} />
                   )}
                 </span>
                 <span className="breakdown-meta">

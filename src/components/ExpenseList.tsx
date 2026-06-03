@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { uid, fmt, fmtCurrency, fetchRates, ratesStale, CURRENCIES, DEFAULT_CURRENCY } from '../utils.ts'
 import { useAppContext } from '../context/AppContext.tsx'
 import Dropdown from './Dropdown.tsx'
+import { IconTrash, IconPencil } from './Icons.tsx'
 
 export default function ExpenseList() {
   const { state, patch } = useAppContext()
@@ -236,11 +237,11 @@ export default function ExpenseList() {
                     {multiCurrency ? fmtCurrency(e.amount, e.currency) : `$${fmt(e.amount)}`}
                   </span>
                   <button className="edit-btn" onClick={() => editingId === e.id ? cancelEdit() : startEdit(e.id)} aria-label="Edit expense">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                      <path d="M9 1.5L11.5 4L4.5 11H2v-2.5L9 1.5Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    <IconPencil />
                   </button>
-                  <button className="remove-btn" onClick={() => removeExpense(e.id)} aria-label="Remove expense">×</button>
+                  <button className="remove-btn" onClick={() => removeExpense(e.id)} aria-label="Remove expense">
+                    <IconTrash />
+                  </button>
                 </div>
               </li>
             ))}

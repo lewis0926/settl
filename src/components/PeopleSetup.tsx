@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAppContext } from '../context/AppContext.tsx'
 import { sharePercent } from '../utils.ts'
 import AddPersonModal from './AddPersonModal.tsx'
+import { IconTrash } from './Icons.tsx'
 
 export default function PeopleSetup() {
   const { state, patch } = useAppContext()
@@ -79,7 +80,7 @@ export default function PeopleSetup() {
                     onClick={() => removePerson(p)}
                     aria-label={`Remove ${p}`}
                   >
-                    ×
+                    <IconTrash />
                   </button>
                 </li>
               )
