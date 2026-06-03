@@ -153,7 +153,7 @@ export default function ExpenseList() {
             placeholder="e.g. Dinner, Taxi, Groceries"
             value={desc}
             onChange={e => setDesc(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && addExpense()}
+            onKeyDown={e => e.key === 'Enter' && saveExpense()}
             maxLength={80}
           />
         </div>
@@ -172,7 +172,7 @@ export default function ExpenseList() {
                 step="0.01"
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && addExpense()}
+                onKeyDown={e => e.key === 'Enter' && saveExpense()}
               />
             </div>
           </div>
