@@ -16,6 +16,7 @@ const DEFAULT_STATE: AppState = {
   weights: {},
   expenses: [],
   multiCurrency: false,
+  splitByPerson: false,
   rates: { CAD: 1, HKD: 1, JPY: 1, USD: 1 },
   ratesUpdated: 0,
   settleCurrency: 'CAD',

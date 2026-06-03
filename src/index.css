@@ -1053,6 +1053,38 @@ input[type="number"] { -moz-appearance: textfield; }
   color: var(--text-muted);
 }
 
+/* ── Participant pills ──────────────────────────── */
+
+.participant-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.participant-pill {
+  padding: 5px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.participant-pill:hover {
+  border-color: var(--text-muted);
+  color: var(--text);
+}
+
+.participant-pill.on {
+  background: var(--green-glow);
+  border-color: var(--green);
+  color: var(--green);
+}
+
 /* ── Mobile ─────────────────────────────────────── */
 
 @media (max-width: 480px) {

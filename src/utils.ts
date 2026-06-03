@@ -1,5 +1,9 @@
 import type { Expense, Transfer } from './types.ts'
 
+// Calculates the minimal set of transfers to settle all debts.
+// weights: relative share multipliers per person (defaults to 1 = equal split).
+// Each expense may carry a participants list; only those people share its cost,
+// with weights re-normalised within that subset.
 export function calcSettlement(
   people: string[],
   expenses: Expense[],
@@ -8,18 +12,23 @@ export function calcSettlement(
   if (people.length < 2 || expenses.length === 0) return []
 
   const w = (p: string) => weights[p] ?? 1
-  const totalWeight = people.reduce((s, p) => s + w(p), 0)
 
+  // Phase 1: accumulate net balance for each person.
+  // Payer gets credit (+), each participant is debited their weighted share (−).
   const balance: Record<string, number> = {}
   for (const p of people) balance[p] = 0
 
   for (const exp of expenses) {
     balance[exp.paidBy] = (balance[exp.paidBy] ?? 0) + exp.amount
-    for (const p of people) {
-      balance[p] = (balance[p] ?? 0) - exp.amount * w(p) / totalWeight
+    const parts = exp.participants?.length ? exp.participants : people
+    const partWeight = parts.reduce((s, p) => s + w(p), 0)
+    for (const p of parts) {
+      balance[p] = (balance[p] ?? 0) - exp.amount * w(p) / partWeight
     }
   }
 
+  // Phase 2: split into creditors (net positive) and debtors (net negative).
+  // Values below $0.005 are treated as zero to avoid floating-point noise.
   const creditors: { name: string; amount: number }[] = []
   const debtors: { name: string; amount: number }[] = []
 
@@ -29,6 +38,9 @@ export function calcSettlement(
     else if (rounded < -0.005) debtors.push({ name, amount: -rounded })
   }
 
+  // Phase 3: greedy two-pointer to minimise the number of transfers.
+  // Always pair the largest creditor with the largest debtor; settle the
+  // smaller of the two and advance that pointer.
   const transfers: Transfer[] = []
   creditors.sort((a, b) => b.amount - a.amount)
   debtors.sort((a, b) => b.amount - a.amount)
@@ -45,6 +57,15 @@ export function calcSettlement(
     d.amount -= amount
     if (c.amount < 0.005) ci++
     if (d.amount < 0.005) di++
+  }
+
+  // Credits and debits must cancel out exactly; any remainder signals a bug.
+  const leftover = [
+    ...creditors.slice(ci).filter(c => c.amount > 0.005),
+    ...debtors.slice(di).filter(d => d.amount > 0.005),
+  ]
+  if (leftover.length > 0) {
+    console.warn('[settl] calcSettlement: unresolved balances after settlement loop', leftover)
   }
 
   return transfers

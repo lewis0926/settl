@@ -4,6 +4,7 @@ export interface Expense {
   amount: number
   currency: string
   paidBy: string
+  participants?: string[]
 }
 
 export type Step = 'setup' | 'expenses' | 'settlement'
@@ -14,6 +15,7 @@ export interface AppState {
   weights: Record<string, number>
   expenses: Expense[]
   multiCurrency: boolean
+  splitByPerson: boolean
   rates: Record<string, number>
   ratesUpdated: number
   settleCurrency: string

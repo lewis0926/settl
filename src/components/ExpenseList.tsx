@@ -1,18 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { uid, fmt, fmtCurrency, convert, fetchRates, ratesStale, CURRENCIES, DEFAULT_CURRENCY } from '../utils.ts'
 import { useAppContext } from '../context/AppContext.tsx'
 import Dropdown from './Dropdown.tsx'
 
 export default function ExpenseList() {
   const { state, patch } = useAppContext()
-  const { people, expenses, multiCurrency, rates, ratesUpdated, settleCurrency } = state
+  const { people, expenses, multiCurrency, splitByPerson, rates, ratesUpdated, settleCurrency } = state
 
   const [desc, setDesc] = useState('')
   const [amount, setAmount] = useState('')
   const [paidBy, setPaidBy] = useState(people[0] ?? '')
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY)
+  const [participants, setParticipants] = useState<string[]>([...people])
   const [loadingRates, setLoadingRates] = useState(false)
   const [ratesError, setRatesError] = useState('')
+
+  useEffect(() => {
+    setParticipants([...people])
+  }, [JSON.stringify(people)])
 
   async function toggleMultiCurrency() {
     if (multiCurrency) {
@@ -35,9 +40,21 @@ export default function ExpenseList() {
     }
   }
 
+  function toggleSplitByPerson() {
+    patch({ splitByPerson: !splitByPerson })
+    setParticipants([...people])
+  }
+
+  function toggleParticipant(person: string) {
+    setParticipants(prev =>
+      prev.includes(person) ? prev.filter(p => p !== person) : [...prev, person]
+    )
+  }
+
   function addExpense() {
     const parsed = parseFloat(amount)
     if (!desc.trim() || isNaN(parsed) || parsed <= 0 || !paidBy) return
+    const parts = splitByPerson ? participants : undefined
     patch({
       expenses: [...expenses, {
         id: uid(),
@@ -45,10 +62,12 @@ export default function ExpenseList() {
         amount: parsed,
         currency: multiCurrency ? currency : DEFAULT_CURRENCY,
         paidBy,
+        ...(parts !== undefined ? { participants: parts } : {}),
       }],
     })
     setDesc('')
     setAmount('')
+    setParticipants([...people])
   }
 
   function removeExpense(id: string) {
@@ -86,6 +105,20 @@ export default function ExpenseList() {
         >
           <span className="multicur-dot" />
           {loadingRates ? 'Loading…' : multiCurrency ? 'ON' : 'OFF'}
+        </button>
+      </div>
+
+      <div className="multicur-bar">
+        <div className="multicur-info">
+          <span className="multicur-title">Split by person</span>
+          <span className="multicur-sub">Exclude people from specific expenses</span>
+        </div>
+        <button
+          className={`multicur-btn${splitByPerson ? ' on' : ''}`}
+          onClick={toggleSplitByPerson}
+        >
+          <span className="multicur-dot" />
+          {splitByPerson ? 'ON' : 'OFF'}
         </button>
       </div>
 
@@ -137,6 +170,24 @@ export default function ExpenseList() {
           </div>
         </div>
 
+        {splitByPerson && (
+          <div className="field">
+            <label>Involved</label>
+            <div className="participant-pills">
+              {people.map(p => (
+                <button
+                  key={p}
+                  type="button"
+                  className={`participant-pill${participants.includes(p) ? ' on' : ''}`}
+                  onClick={() => toggleParticipant(p)}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <button className="btn-secondary" onClick={addExpense} disabled={!canAdd}>
           + Add expense
         </button>
@@ -149,7 +200,12 @@ export default function ExpenseList() {
               <li key={e.id} className="expense-item">
                 <div className="expense-info">
                   <span className="expense-desc">{e.description}</span>
-                  <span className="expense-meta">paid by {e.paidBy}</span>
+                  <span className="expense-meta">
+                    paid by {e.paidBy}
+                    {splitByPerson && e.participants && e.participants.length < people.length && (
+                      <> · {e.participants.length} of {people.length}</>
+                    )}
+                  </span>
                 </div>
                 <div className="expense-right">
                   <span className="expense-amount">

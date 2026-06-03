@@ -1,10 +1,10 @@
 import { useAppContext } from '../context/AppContext.tsx'
-import { calcSettlement, sharePercent, convert, fmt, fmtCurrency, CURRENCIES, DEFAULT_CURRENCY } from '../utils.ts'
+import { calcSettlement, convert, fmt, fmtCurrency, CURRENCIES, DEFAULT_CURRENCY } from '../utils.ts'
 import type { Expense } from '../types.ts'
 
 export default function Settlement() {
   const { state, patch, reset } = useAppContext()
-  const { people, weights, expenses, multiCurrency, rates, settleCurrency } = state
+  const { people, weights, expenses, multiCurrency, splitByPerson, rates, settleCurrency } = state
 
   const outCurrency = multiCurrency ? settleCurrency : DEFAULT_CURRENCY
 
@@ -12,12 +12,20 @@ export default function Settlement() {
     ...e,
     amount: convert(e.amount, e.currency ?? DEFAULT_CURRENCY, outCurrency, rates),
     currency: outCurrency,
+    participants: splitByPerson ? e.participants : undefined,
   }))
 
   const transfers = calcSettlement(people, normalised, weights)
   const total = normalised.reduce((s, e) => s + e.amount, 0)
-  const perPerson = (name: string) => (sharePercent(name, people, weights) / 100) * total
   const display = (amount: number) => multiCurrency ? fmtCurrency(amount, outCurrency) : `$${fmt(amount)}`
+
+  const w = (p: string) => weights[p] ?? 1
+  const perPerson = (name: string) => normalised.reduce((s, e) => {
+    const parts = e.participants?.length ? e.participants : people
+    if (!parts.includes(name)) return s
+    const partWeight = parts.reduce((acc, p) => acc + w(p), 0)
+    return s + e.amount * w(name) / partWeight
+  }, 0)
 
   return (
     <div className="step-card">
@@ -73,7 +81,12 @@ export default function Settlement() {
             <li key={e.id} className="breakdown-item">
               <span className="breakdown-desc">{e.description}</span>
               <span className="breakdown-meta">
-                <span className="breakdown-paid">{e.paidBy}</span>
+                <span className="breakdown-paid">
+                  {e.paidBy}
+                  {splitByPerson && e.participants && e.participants.length < people.length && (
+                    <> · {e.participants.length}/{people.length}</>
+                  )}
+                </span>
                 <span className="breakdown-amount">
                   {multiCurrency && e.currency !== outCurrency
                     ? fmtCurrency(e.amount, e.currency)
@@ -92,7 +105,7 @@ export default function Settlement() {
             <li key={p} className="breakdown-item">
               <span className="breakdown-desc">{p}</span>
               <span className="breakdown-meta">
-                <span className="breakdown-paid">{sharePercent(p, people, weights).toFixed(0)}%</span>
+                <span className="breakdown-paid">{total > 0 ? (perPerson(p) / total * 100).toFixed(0) : 0}%</span>
                 <span className="breakdown-amount">{display(perPerson(p))}</span>
               </span>
             </li>
