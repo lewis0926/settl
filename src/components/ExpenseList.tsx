@@ -12,6 +12,7 @@ export default function ExpenseList() {
   const [paidBy, setPaidBy] = useState(people[0] ?? '')
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY)
   const [participants, setParticipants] = useState<string[]>([...people])
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [loadingRates, setLoadingRates] = useState(false)
   const [ratesError, setRatesError] = useState('')
 
@@ -51,30 +52,53 @@ export default function ExpenseList() {
     )
   }
 
-  function addExpense() {
+  function startEdit(id: string) {
+    const e = expenses.find(ex => ex.id === id)
+    if (!e) return
+    setEditingId(id)
+    setDesc(e.description)
+    setAmount(String(e.amount))
+    setPaidBy(e.paidBy)
+    setCurrency(e.currency ?? DEFAULT_CURRENCY)
+    setParticipants(e.participants ?? [...people])
+  }
+
+  function cancelEdit() {
+    setEditingId(null)
+    setDesc('')
+    setAmount('')
+    setParticipants([...people])
+  }
+
+  function saveExpense() {
     const parsed = parseFloat(amount)
     if (!desc.trim() || isNaN(parsed) || parsed <= 0 || !paidBy) return
     const parts = splitByPerson ? participants : undefined
+    const updated = {
+      id: editingId ?? uid(),
+      description: desc.trim(),
+      amount: parsed,
+      currency: multiCurrency ? currency : DEFAULT_CURRENCY,
+      paidBy,
+      ...(parts !== undefined ? { participants: parts } : {}),
+    }
     patch({
-      expenses: [...expenses, {
-        id: uid(),
-        description: desc.trim(),
-        amount: parsed,
-        currency: multiCurrency ? currency : DEFAULT_CURRENCY,
-        paidBy,
-        ...(parts !== undefined ? { participants: parts } : {}),
-      }],
+      expenses: editingId
+        ? expenses.map(e => e.id === editingId ? updated : e)
+        : [...expenses, updated],
     })
+    setEditingId(null)
     setDesc('')
     setAmount('')
     setParticipants([...people])
   }
 
   function removeExpense(id: string) {
+    if (editingId === id) cancelEdit()
     patch({ expenses: expenses.filter(e => e.id !== id) })
   }
 
-  const canAdd = desc.trim() && parseFloat(amount) > 0 && !!paidBy
+  const canAdd = !!desc.trim() && parseFloat(amount) > 0 && !!paidBy
   const uniquePayers = new Set(expenses.map(e => e.paidBy)).size
   const canSettle = expenses.length > 0 && people.length >= 2 && uniquePayers >= 2
 
@@ -183,16 +207,21 @@ export default function ExpenseList() {
           </div>
         )}
 
-        <button className="btn-secondary" onClick={addExpense} disabled={!canAdd}>
-          + Add expense
-        </button>
+        <div className="form-actions">
+          <button className="btn-secondary" onClick={saveExpense} disabled={!canAdd}>
+            {editingId ? 'Save changes' : '+ Add expense'}
+          </button>
+          {editingId && (
+            <button className="btn-ghost" onClick={cancelEdit}>Cancel</button>
+          )}
+        </div>
       </div>
 
       {expenses.length > 0 && (
         <>
           <ul className="expense-list">
             {expenses.map(e => (
-              <li key={e.id} className="expense-item">
+              <li key={e.id} className={`expense-item${editingId === e.id ? ' editing' : ''}`}>
                 <div className="expense-info">
                   <span className="expense-desc">{e.description}</span>
                   <span className="expense-meta">
@@ -206,6 +235,11 @@ export default function ExpenseList() {
                   <span className="expense-amount">
                     {multiCurrency ? fmtCurrency(e.amount, e.currency) : `$${fmt(e.amount)}`}
                   </span>
+                  <button className="edit-btn" onClick={() => editingId === e.id ? cancelEdit() : startEdit(e.id)} aria-label="Edit expense">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                      <path d="M9 1.5L11.5 4L4.5 11H2v-2.5L9 1.5Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
                   <button className="remove-btn" onClick={() => removeExpense(e.id)} aria-label="Remove expense">×</button>
                 </div>
               </li>

@@ -883,6 +883,34 @@ input[type="number"] { -moz-appearance: textfield; }
   font-variant-numeric: tabular-nums;
 }
 
+.edit-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.1s;
+}
+
+.edit-btn:hover { color: var(--green); }
+
+.expense-item.editing {
+  background: var(--surface);
+}
+
+.expense-item.editing .expense-desc {
+  color: var(--green);
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .remove-btn {
   background: none;
   border: none;
