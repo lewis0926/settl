@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useAppContext } from '../context/AppContext.tsx'
 import { calcSettlement, convert, fmt, fmtCurrency, CURRENCIES, DEFAULT_CURRENCY } from '../utils.ts'
 import type { Expense } from '../types.ts'
@@ -10,13 +11,16 @@ export default function Settlement() {
 
   const normalised: Expense[] = expenses.map(e => ({
     ...e,
-    amount: convert(e.amount, e.currency ?? DEFAULT_CURRENCY, outCurrency, rates),
+    amount: multiCurrency
+      ? convert(e.amount, e.currency ?? DEFAULT_CURRENCY, outCurrency, rates)
+      : e.amount,
     currency: outCurrency,
     participants: splitByPerson ? e.participants : undefined,
   }))
 
   const transfers = calcSettlement(people, normalised, weights)
   const total = normalised.reduce((s, e) => s + e.amount, 0)
+  const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const display = (amount: number) => multiCurrency ? fmtCurrency(amount, outCurrency) : `$${fmt(amount)}`
 
   const w = (p: string) => weights[p] ?? 1
@@ -33,9 +37,7 @@ export default function Settlement() {
         <span className="step-badge settled">✓</span>
         <div>
           <h2>Settlement</h2>
-          <p className="step-sub">
-            {display(total)} total · {people.length} people
-          </p>
+          <p className="step-sub">{people.length} people</p>
         </div>
       </div>
 
@@ -77,24 +79,53 @@ export default function Settlement() {
       <div className="breakdown">
         <h3>Expense breakdown</h3>
         <ul className="breakdown-list">
-          {expenses.map(e => (
-            <li key={e.id} className="breakdown-item">
-              <span className="breakdown-desc">{e.description}</span>
-              <span className="breakdown-meta">
-                <span className="breakdown-paid">
-                  {e.paidBy}
-                  {splitByPerson && e.participants && e.participants.length < people.length && (
-                    <> · {e.participants.length}/{people.length}</>
+          {expenses.map(e => {
+            const isPartial = splitByPerson && e.participants && e.participants.length < people.length
+            const isExpanded = expanded.has(e.id)
+            return (
+              <li
+                key={e.id}
+                className={`breakdown-item${isPartial ? ' breakdown-item-expandable' : ''}`}
+                onClick={() => isPartial && setExpanded(prev => {
+                  const next = new Set(prev)
+                  next.has(e.id) ? next.delete(e.id) : next.add(e.id)
+                  return next
+                })}
+              >
+                <span className="breakdown-desc">
+                  {e.description}
+                  {isPartial && (
+                    <svg
+                      className={`breakdown-chevron${isExpanded ? ' open' : ''}`}
+                      width="12" height="12" viewBox="0 0 12 12" fill="none"
+                    >
+                      <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   )}
                 </span>
-                <span className="breakdown-amount">
-                  {multiCurrency && e.currency !== outCurrency
-                    ? fmtCurrency(e.amount, e.currency)
-                    : `$${fmt(e.amount)}`}
+                <span className="breakdown-meta">
+                  <span className="breakdown-paid">
+                    {e.paidBy}
+                    {isPartial && <> · {e.participants!.length} of {people.length}</>}
+                  </span>
+                  <span className="breakdown-amount">
+                    {multiCurrency ? fmtCurrency(e.amount, e.currency) : `$${fmt(e.amount)}`}
+                  </span>
                 </span>
-              </span>
-            </li>
-          ))}
+                {isPartial && isExpanded && (
+                  <span className="breakdown-participants">
+                    {e.participants!.join(', ')}
+                  </span>
+                )}
+              </li>
+            )
+          })}
+          <li className="breakdown-item breakdown-item-total">
+            <span className="breakdown-desc">Total{multiCurrency ? ` (${outCurrency})` : ''}</span>
+            <span className="breakdown-meta">
+              <span className="breakdown-amount breakdown-total">{display(total)}</span>
+            </span>
+          </li>
         </ul>
       </div>
 

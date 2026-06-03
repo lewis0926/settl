@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import { uid, fmt, fmtCurrency, convert, fetchRates, ratesStale, CURRENCIES, DEFAULT_CURRENCY } from '../utils.ts'
+import { uid, fmt, fmtCurrency, fetchRates, ratesStale, CURRENCIES, DEFAULT_CURRENCY } from '../utils.ts'
 import { useAppContext } from '../context/AppContext.tsx'
 import Dropdown from './Dropdown.tsx'
 
 export default function ExpenseList() {
   const { state, patch } = useAppContext()
-  const { people, expenses, multiCurrency, splitByPerson, rates, ratesUpdated, settleCurrency } = state
+  const { people, expenses, multiCurrency, splitByPerson, ratesUpdated } = state
 
   const [desc, setDesc] = useState('')
   const [amount, setAmount] = useState('')
@@ -73,11 +73,6 @@ export default function ExpenseList() {
   function removeExpense(id: string) {
     patch({ expenses: expenses.filter(e => e.id !== id) })
   }
-
-  const totalInSettle = expenses.reduce((s, e) => {
-    const c = multiCurrency ? e.currency : DEFAULT_CURRENCY
-    return s + convert(e.amount, c, multiCurrency ? settleCurrency : DEFAULT_CURRENCY, rates)
-  }, 0)
 
   const canAdd = desc.trim() && parseFloat(amount) > 0 && !!paidBy
   const uniquePayers = new Set(expenses.map(e => e.paidBy)).size
@@ -203,7 +198,7 @@ export default function ExpenseList() {
                   <span className="expense-meta">
                     paid by {e.paidBy}
                     {splitByPerson && e.participants && e.participants.length < people.length && (
-                      <> · {e.participants.length} of {people.length}</>
+                      <> · {e.participants.length} of {people.length} people</>
                     )}
                   </span>
                 </div>
@@ -217,16 +212,6 @@ export default function ExpenseList() {
             ))}
           </ul>
 
-          <div className="total-row">
-            <span className="total-label">
-              Total{multiCurrency ? ` (in ${settleCurrency})` : ''}
-            </span>
-            <span className="total-amount">
-              {multiCurrency
-                ? fmtCurrency(totalInSettle, settleCurrency)
-                : `$${fmt(totalInSettle)}`}
-            </span>
-          </div>
         </>
       )}
 

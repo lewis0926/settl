@@ -60,12 +60,11 @@ export function calcSettlement(
   }
 
   // Credits and debits must cancel out exactly; any remainder signals a bug.
-  const leftover = [
-    ...creditors.slice(ci).filter(c => c.amount > 0.005),
-    ...debtors.slice(di).filter(d => d.amount > 0.005),
-  ]
-  if (leftover.length > 0) {
-    console.warn('[settl] calcSettlement: unresolved balances after settlement loop', leftover)
+  const unresolved =
+    creditors.slice(ci).reduce((s, c) => s + c.amount, 0) +
+    debtors.slice(di).reduce((s, d) => s + d.amount, 0)
+  if (unresolved > 0.005) {
+    console.warn(`[settl] calcSettlement: $${unresolved.toFixed(2)} unresolved after settlement loop`)
   }
 
   return transfers

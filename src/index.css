@@ -1023,6 +1023,46 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 .breakdown-item:last-child { border-bottom: none; }
+.breakdown-item:nth-last-child(2) { border-bottom: none; }
+
+.breakdown-item-expandable {
+  cursor: pointer;
+  flex-wrap: wrap;
+}
+
+.breakdown-item-expandable:hover .breakdown-desc {
+  color: var(--green);
+}
+
+.breakdown-chevron {
+  display: inline-block;
+  margin-left: 5px;
+  color: var(--text-dim);
+  vertical-align: middle;
+  transition: transform 0.15s;
+  transform: rotate(-90deg);
+}
+
+.breakdown-chevron.open {
+  transform: rotate(0deg);
+}
+
+.breakdown-participants {
+  width: 100%;
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 0 6px;
+}
+
+.breakdown-item-total {
+  margin-top: 2px;
+  border-top: 2px solid var(--border);
+}
+
+.breakdown-total {
+  font-size: 14px;
+  color: var(--text);
+}
 
 .breakdown-desc {
   font-size: 13px;
@@ -1052,6 +1092,7 @@ input[type="number"] { -moz-appearance: textfield; }
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
 }
+
 
 /* ── Participant pills ──────────────────────────── */
 
